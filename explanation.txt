@@ -1,0 +1,283 @@
+pip install djangorestframework-simplejwt
+//work flow of JWT authentication during login
+SimpleJWT is a Django package that provides JSON Web Token authentication. 
+In JWT authentication, client sends username and password to the server, server check credentials. If valid, generate JWT.JWT contains the claims(paayload) like user ID, roles,permissions.Then it send JWT token to client.{"token":"WQEQeqeqeqw"}.
+Then, client stores JWT token in local storagee/session storage.client sends next request with the JWT.server verifies JWT and if token is valid then server response with requested data.
+In this way, JWT autehntication works.
+->access token is short-lived and refresh token is long-lived and used to obtain a new access token when expired.
+//work flow of jwt authentication during register
+->user registers
+->server validates and creates user
+->server generates JWT.The token included user-reelated claims(user_id,username,role,exp),client stores JWT.user is now authenticated.
+
+
+
+##cors->cross origin resource sharing
+->useful when your backend and frontend are on different ports. 
+
+###authentication
+-> This Django code defines a custom user model by extending Django’s built-in authentication system.
+->The code replaces Django's default User model with a custom one that uses email instead of username for authentication and adds a profile image field.
+->BaseUserManager: A base class for creating custom user managers.
+->AbstractBaseUser: A base class for building custom user models without Django’s built-in username/password fields.
+
+
+
+
+
+
+
+
+
+src/
+├── api/
+│   └── auth.js
+├── components/
+│   ├── Login.js
+│   ├── Register.js
+│   ├── Profile.js
+│   ├── DashboardAdmin.js
+│   └── DashboardUser.js
+├── context/
+│   └── AuthContext.js
+├── App.js
+└── index.js
+
+
+auth.js
+import axios from 'axios';
+
+const API = axios.create({
+  baseURL: 'http://localhost:8000/api/user/',
+});
+
+export const register = (data) => API.post('register/', data);
+export const login = (data) => API.post('login/', data);
+export const getCurrentUser = (token) =>
+  API.get('current-user/', { headers: { Authorization: `Bearer ${token}` } });
+export const updateProfile = (data, token) =>
+  API.put('update-profile/', data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+export const getAdminDashboard = (token) =>
+  API.get('dashboard/admin/', { headers: { Authorization: `Bearer ${token}` } });
+export const getUserDashboard = (token) =>
+  API.get('dashboard/user/', { headers: { Authorization: `Bearer ${token}` } });
+
+
+//AuthContext.js
+import { createContext, useState, useEffect } from 'react';
+
+export const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [role, setRole] = useState(localStorage.getItem('role'));
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', role);
+    } else {
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+    }
+  }, [token, role]);
+
+  return (
+    <AuthContext.Provider value={{ token, setToken, role, setRole, user, setUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+
+//register.js
+import React, { useState, useContext } from 'react';
+import { register } from '../api/auth';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
+function Register() {
+  const [form, setForm] = useState({ email: '', name: '', password: '', password2: '' });
+  const { setToken, setRole } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await register(form);
+      setToken(res.data.token.access);
+      setRole(res.data.role);
+      navigate(`/dashboard/${res.data.role}`);
+    } catch (err) {
+      alert(err.response.data?.msg || 'Registration failed');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input placeholder="Email" onChange={e => setForm({...form, email: e.target.value})} />
+      <input placeholder="Name" onChange={e => setForm({...form, name: e.target.value})} />
+      <input type="password" placeholder="Password" onChange={e => setForm({...form, password: e.target.value})} />
+      <input type="password" placeholder="Confirm Password" onChange={e => setForm({...form, password2: e.target.value})} />
+      <button type="submit">Register</button>
+    </form>
+  );
+}
+
+export default Register;
+
+
+
+
+//login.js
+import React, { useState, useContext } from 'react';
+import { login } from '../api/auth';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
+function Login() {
+  const [form, setForm] = useState({ email: '', password: '' });
+  const { setToken, setRole } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await login(form);
+      setToken(res.data.token.access);
+      setRole(res.data.role);
+      navigate(`/dashboard/${res.data.role}`);
+    } catch (err) {
+      alert(err.response.data?.errors?.non_field_errors[0] || 'Login failed');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input placeholder="Email" onChange={e => setForm({...form, email: e.target.value})} />
+      <input type="password" placeholder="Password" onChange={e => setForm({...form, password: e.target.value})} />
+      <button type="submit">Login</button>
+    </form>
+  );
+}
+
+export default Login;
+
+//profile.js
+import React, { useEffect, useContext, useState } from 'react';
+import { getCurrentUser, updateProfile } from '../api/auth';
+import { AuthContext } from '../context/AuthContext';
+
+function Profile() {
+  const { token } = useContext(AuthContext);
+  const [data, setData] = useState({});
+  const [file, setFile] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const res = await getCurrentUser(token);
+      setData(res.data);
+    };
+    fetchUser();
+  }, [token]);
+
+  const handleUpload = async () => {
+    const formData = new FormData();
+    formData.append('profile_image', file);
+    const res = await updateProfile(formData, token);
+    setData(res.data);
+  };
+
+  return (
+    <div>
+      <h2>{data.name}</h2>
+      <img src={data.profile_image} alt="Profile" width="100" />
+      <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+      <button onClick={handleUpload}>Update Profile Image</button>
+    </div>
+  );
+}
+
+export default Profile;
+
+
+
+
+//dashboardAdmin.js
+import React, { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { getAdminDashboard } from '../api/auth';
+
+function DashboardAdmin() {
+  const { token } = useContext(AuthContext);
+  const [msg, setMsg] = useState('');
+
+  useEffect(() => {
+    getAdminDashboard(token).then(res => setMsg(res.data.msg));
+  }, [token]);
+
+  return <h2>{msg}</h2>;
+}
+export default DashboardAdmin;
+
+
+
+//dashboarduser.js
+
+import React, { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { getUserDashboard } from '../api/auth';
+
+function DashboardUser() {
+  const { token } = useContext(AuthContext);
+  const [msg, setMsg] = useState('');
+
+  useEffect(() => {
+    getUserDashboard(token).then(res => setMsg(res.data.msg));
+  }, [token]);
+
+  return <h2>{msg}</h2>;
+}
+export default DashboardUser;
+
+
+//app.js
+
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Register from './components/Register';
+import Login from './components/Login';
+import Profile from './components/Profile';
+import DashboardAdmin from './components/DashboardAdmin';
+import DashboardUser from './components/DashboardUser';
+import { AuthProvider } from './context/AuthContext';
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/dashboard/admin" element={<DashboardAdmin />} />
+          <Route path="/dashboard/user" element={<DashboardUser />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
+
+export default App;
+
+
+
+
+

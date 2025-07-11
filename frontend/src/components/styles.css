@@ -1,0 +1,299 @@
+* {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #00193C;
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      /* height: 300vh; */
+      padding-top: 90px; /* Prevent content from going under the fixed navbar */
+    }
+
+    .logo {
+      max-height: 40px;
+    }
+
+    /* Navbar Styling */
+    .navbar {
+      background-color: rgba(0, 25, 60, 0.6);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      border-radius:12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      position: fixed; /* Fixes the navbar at the top */
+      top:0;
+      left: 0;
+      right: 0;
+      z-index: 1050;
+    }
+
+    .navbar-nav {
+      font-size: 1.05rem;
+    }
+
+    .nav-item {
+      padding: 0 1rem;
+    }
+
+    .nav-link {
+      color: #e0f0ff;
+      transition: color 0.3s ease, border-bottom 0.3s ease;
+      position: relative;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: #85ebff;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background-color: #85ebff;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+
+    .login-btn, .logout-btn {
+      background-color: #092348;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.7rem;
+      border-radius: 0.4rem;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .login-btn:hover {
+      background-color: #0c2d5c;
+      transform: translateY(-1px);
+    }
+    .diseases{
+      /* border: 1px solid white; */
+       width:120%;
+       background-color: #001535;
+    }
+    .disease-btn{
+      background-color:#4BA9FD; 
+      color: black;
+    }
+    .disease-btn:hover {
+  background-color: #1976D2;
+  color:black;
+    }
+     .disease-btn:focus,
+  .disease-btn:active,
+  .disease-btn:focus:active {
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: inherit !important;
+    border-color: inherit !important;
+    color: inherit !important;
+  }
+    .prediction-card{
+      background-color:#001535 ;
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      max-height:220px;
+    }
+    .prediction-card:hover {   
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+.blog-card {
+  background: linear-gradient(135deg, #012c60, #004080);
+  border-radius: 16px;
+  overflow: hidden;
+  /* transition: transform 0.3s ease, box-shadow 0.3s ease; */
+}
+
+.blog-card:hover {
+  /* transform: translateY(-6px); */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* disease form */
+#heartDiseaseForm {
+  background-color: #001535 !important; /* Keep the original background color */
+  border-left: 5px solid #4ab1ff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  padding: 3rem;
+  border-radius: 1rem;
+}
+
+#heartDiseaseForm .form-label {
+  font-weight: 500;
+  color: #e0f0ff; /* Keep the original label color */
+}
+
+#heartDiseaseForm input,
+#heartDiseaseForm select {
+  border-radius: 0.75rem;
+  background-color:#D9F1FF; /* Light soft blue/grey background */
+  color: #333; /* Darker text color for readability */
+  padding: 0.75rem;
+  border: 1px solid #a1c9f7; /* Soft blue border */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#heartDiseaseForm input:focus,
+#heartDiseaseForm select:focus {
+  outline: none;
+  border-color: #56c3f5; /* Lighter blue for the focus border */
+  box-shadow: 0 0 10px rgba(86, 195, 245, 0.6); /* Blue glow on focus */
+}
+
+#heartDiseaseForm button {
+  background-color:#4BA9FD;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+#heartDiseaseForm button:hover {
+  background-color: #1976D2;
+  transform: translateY(-3px);
+}
+
+/* form submit garepaxi */
+.result-card{
+  background: linear-gradient(135deg, #004080, #012c60);  /* Gradient background for consistency */
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.risk-high {
+  color: #FF4C4C; 
+}
+
+.risk-medium {
+  color: #FFD966; 
+}
+
+.risk-low {
+  color: #7CFCB0;
+}
+
+
+/* Custom Title Styling for Health Recommendations */
+.custom-title {
+  font-size: 1.75rem; 
+  color:white; 
+  font-weight: 600; 
+  text-transform: uppercase; 
+  letter-spacing: 2px; 
+  border-bottom: 3px solid #85ebff; 
+  padding-bottom: 8px;
+  margin-bottom: 20px; 
+  font-family: 'Roboto', sans-serif; 
+}
+
+.custom-title::before {
+  content: ""; 
+  display: block;
+  width: 40px;
+  height: 3px;
+  background-color:#85ebff;
+  margin-bottom: 10px;
+}
+
+
+.card-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #e0f0ff; /* Ensures the text stands out against the dark background */
+}
+
+
+.custom-alert {
+  background-color: #f5f5f5; 
+  color: #2a2a2a;
+  border-left: 5px solid #d9534f; 
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+  font-size: 1rem;
+  position: relative;
+  margin-top: 20px;
+}
+
+.custom-alert .btn-close {
+  background-color: transparent;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+}
+
+.custom-alert strong {
+  font-weight: 600; 
+}
+
+
+.custom-alert .btn-close:hover {
+  color: #d9534f; 
+}
+
+
+
+
+
+    @media (max-width: 991.98px) {
+      .navbar {
+        border-radius: 0;
+      }
+
+      .nav-item {
+        padding: 0.5rem 0;
+      }
+
+      .login-btn {
+        width: 100%;
+        margin-top: 1rem;
+      }
+      .diseases{
+        background-color: #001535;
+       width:100%;
+    }
+/* diseaseform */
+     #heartDiseaseForm {
+    padding: 2rem;
+  }
+
+  #heartDiseaseForm .row {
+    margin-bottom: 1rem;
+  }
+
+  #heartDiseaseForm button {
+    width: 100%;
+  }
+
+   /* after submit */
+  .result-card{
+    padding: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+  }
+
+    }
