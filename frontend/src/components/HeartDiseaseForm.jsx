@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import axios from "axios";
 import HeartDiseaseFormResult from "./HeartDiseaseFormResult";
+import { AuthContext } from "../context/AuthContext";
 
 const HeartDiseaseForm = () => {
+   const { auth } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     Age: "",
     Gender: "",
@@ -34,59 +36,84 @@ const HeartDiseaseForm = () => {
 
   const validate = () => {
     const newErrors = {};
+    //  validating age
+     if (!formData.Age) {
+      newErrors.Age = "Age is required";
+    } else if (Number(formData.Age) < 10 || Number(formData.Age) > 100) {
+      newErrors.Age = "Age must be between 10 and 100 years";
+    }
+    // validating gender
+    if (!formData.Gender) {
+      newErrors.Gender = "Gender is required";
+    }
 
-    if (!formData.Age) newErrors.Age = "Age is required";
-    else if (Number(formData.Age) < 1 || Number(formData.Age) > 120)
-      newErrors.Age = "Age must be between 1 and 120";
+    // validating cholesterol
+    if (!formData.Cholesterol) {
+      newErrors.Cholesterol = "Cholesterol level is required";
+    } else if (Number(formData.Cholesterol) < 100 || Number(formData.Cholesterol) > 400) {
+      newErrors.Cholesterol = "Cholesterol must be between 100-400 mg/dL";
+    }
 
-    if (!formData.Gender) newErrors.Gender = "Gender is required";
-
-    if (!formData.Cholesterol) newErrors.Cholesterol = "Cholesterol is required";
-    else if (Number(formData.Cholesterol) <= 0)
-      newErrors.Cholesterol = "Cholesterol must be a positive number";
-
-    if (!formData.Blood_Pressure) newErrors.Blood_Pressure = "Blood Pressure is required";
-    else if (Number(formData.Blood_Pressure) <= 0)
-      newErrors.Blood_Pressure = "Blood Pressure must be positive";
-
-    if (!formData.Heart_Rate) newErrors.Heart_Rate = "Heart Rate is required";
-    else if (Number(formData.Heart_Rate) <= 0)
-      newErrors.Heart_Rate = "Heart Rate must be positive";
-
-    if (!formData.Smoking) newErrors.Smoking = "Smoking status is required";
-
-    if (formData.Exercise_Hours === "") newErrors.Exercise_Hours = "Exercise Hours is required";
-    else if (Number(formData.Exercise_Hours) < 0)
-      newErrors.Exercise_Hours = "Exercise Hours cannot be negative";
-
-    if (!formData.Family_History) newErrors.Family_History = "Family History is required";
+    // validating blood pressure
+     if (!formData.Blood_Pressure) {
+      newErrors.Blood_Pressure = "Blood pressure is required";
+    } else if (Number(formData.Blood_Pressure) < 70 || Number(formData.Blood_Pressure) > 250) {
+      newErrors.Blood_Pressure = "Blood pressure must be between 70-250 mmHg";
+    }
+// validating heart rate
+     if (!formData.Heart_Rate) {
+      newErrors.Heart_Rate = "Heart rate is required";
+    } else if (Number(formData.Heart_Rate) < 40 || Number(formData.Heart_Rate) > 180) {
+      newErrors.Heart_Rate = "Heart rate must be between 40-180 bpm";
+    }
+// validating smoking
+     if (!formData.Smoking) {
+      newErrors.Smoking = "Smoking status is required";
+    }
+// validating exercise hours
+    if (formData.Exercise_Hours === "") {
+      newErrors.Exercise_Hours = "Exercise hours is required";
+    } else if (Number(formData.Exercise_Hours) < 0 || Number(formData.Exercise_Hours) > 9) {
+      newErrors.Exercise_Hours = "Exercise hours must be between 0-9 hours per week";
+    }
+// validating family history
+    if (!formData.Family_History) {
+      newErrors.Family_History = "Family history is required";
+    }
 
     // Diabetes
-    if (!formData.Diabetes) newErrors.Diabetes = "Diabetes status is required";
+    if (!formData.Diabetes) {
+      newErrors.Diabetes = "Diabetes status is required";
+    }
 
     // Obesity
-    if (!formData.Obesity) newErrors.Obesity = "Obesity status is required";
+     if (!formData.Obesity) {
+      newErrors.Obesity = "Weight status is required";
+    }
 
     // Stress Level
-    if (!formData.Stress_Level) newErrors.Stress_Level = "Stress Level is required";
-    else if (
-      Number(formData.Stress_Level) < 1 ||
-      Number(formData.Stress_Level) > 10
-    )
-      newErrors.Stress_Level = "Stress Level must be between 1 and 10";
+   if (!formData.Stress_Level) {
+      newErrors.Stress_Level = "Stress level is required";
+    } else if (Number(formData.Stress_Level) < 1 || Number(formData.Stress_Level) > 10) {
+      newErrors.Stress_Level = "Stress level must be between 1-10";
+    }
 
     // Blood Sugar
-    if (!formData.Blood_Sugar) newErrors.Blood_Sugar = "Blood Sugar is required";
-    else if (Number(formData.Blood_Sugar) <= 0)
-      newErrors.Blood_Sugar = "Blood Sugar must be positive";
+    if (!formData.Blood_Sugar) {
+      newErrors.Blood_Sugar = "Blood sugar level is required";
+    } else if (Number(formData.Blood_Sugar) < 50 || Number(formData.Blood_Sugar) > 400) {
+      newErrors.Blood_Sugar = "Blood sugar must be between 50-400 mg/dL";
+    }
 
     // Exercise Induced Angina
-    if (!formData.Exercise_Induced_Angina)
-      newErrors.Exercise_Induced_Angina = "Exercise Induced Angina status is required";
+    if (!formData.Exercise_Induced_Angina) {
+      newErrors.Exercise_Induced_Angina = "Exercise-related chest discomfort status is required";
+    }
 
     // Chest Pain Type
-    if (!formData.Chest_Pain_Type)
-      newErrors.Chest_Pain_Type = "Chest Pain Type is required";
+    if (!formData.Chest_Pain_Type) {
+      newErrors.Chest_Pain_Type = "Chest pain type is required";
+    }
 
     setErrors(newErrors);
     // Return true if no errors
@@ -100,7 +127,6 @@ const HeartDiseaseForm = () => {
       // If validation fails, do not submit
       return;
     }
-
 
     const formattedData = {
       Age: Number(formData.Age),
@@ -120,7 +146,15 @@ const HeartDiseaseForm = () => {
     };
 
     try {
-      const response = await axios.post("http://localhost:8000/api/disease/predict-heart-disease/", formattedData);
+      const response = await axios.post(
+      "http://localhost:8000/api/disease/predict-heart-disease/",
+      formattedData,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token}`
+        }
+      }
+    );
       setResult(response.data);
       console.log("Prediction Result:", response.data);
     } catch (error) {
@@ -162,8 +196,8 @@ const HeartDiseaseForm = () => {
               value={formData.Age}
               onChange={handleChange}
               placeholder="Enter your age"
-              min="1"
-              max="100"
+              min="10"
+              max="80"
               required
             />
           </div>
@@ -182,10 +216,12 @@ const HeartDiseaseForm = () => {
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </select>
+            {/* {errors.Gender && <p className="text-red-400 text-sm">{errors.Gender}</p>} */}
           </div>
+
           {/* Cholesterol */}
           <div className="col-md-4">
-            <label htmlFor="Cholesterol" className="form-label">Cholesterol</label>
+            <label htmlFor="Cholesterol" className="form-label">Total Cholesterol level</label>
             <input
               type="number"
               className="form-control"
@@ -194,15 +230,17 @@ const HeartDiseaseForm = () => {
               value={formData.Cholesterol}
               onChange={handleChange}
               placeholder="Cholesterol level"
-              min="1"
+              min="100"
+              max="400"
               required
             />
+            <p className="text-xs text-gray-400" style={{fontSize:"0.8rem"}}>mg/dL (check your last blood test report)</p>
           </div>
 
           {/* Additional fields follow the same pattern, renamed using backend expected keys */}
 
           <div className="col-md-4">
-            <label htmlFor="Blood_Pressure" className="form-label">Blood Pressure</label>
+            <label htmlFor="Blood_Pressure" className="form-label">Enter systolic blood pressure</label>
             <input
               type="number"
               className="form-control"
@@ -211,13 +249,15 @@ const HeartDiseaseForm = () => {
               value={formData.Blood_Pressure}
               onChange={handleChange}
               placeholder="Blood Pressure (mmHg)"
-              min="1"
+              min="70"
+              max="250"
               required
             />
+            <p className="text-xs text-gray-400" style={{fontSize:"0.8rem"}}>Top number in your BP reading (mmHg)</p>
           </div>
 
           <div className="col-md-4">
-            <label htmlFor="Heart_Rate" className="form-label">Heart Rate</label>
+            <label htmlFor="Heart_Rate" className="form-label">What is your Resting Heart Rate?</label>
             <input
               type="number"
               className="form-control"
@@ -226,13 +266,15 @@ const HeartDiseaseForm = () => {
               value={formData.Heart_Rate}
               onChange={handleChange}
               placeholder="Heart Rate (bpm)"
-              min="1"
+               min="40"
+              max="180"
               required
             />
+            <p className="text-xs text-gray-400" style={{fontSize:"0.8rem"}}>Beats per minute when at rest</p>
           </div>
 
           <div className="col-md-4">
-            <label htmlFor="Smoking" className="form-label">Smoking</label>
+            <label htmlFor="Smoking" className="form-label">Do you smoke?</label>
             <select
               className="form-select"
               id="Smoking"
@@ -242,9 +284,9 @@ const HeartDiseaseForm = () => {
               required
             >
               <option value="">Select</option>
-              <option value="current">Current</option>
-              <option value="former">Former</option>
-              <option value="never">Never</option>
+              <option value="current">Yes, I currently smoke</option>
+              <option value="former">I used to smoke but quit</option>
+              <option value="never">No, I've never smoked</option>
             </select>
           </div>
 
@@ -259,10 +301,12 @@ const HeartDiseaseForm = () => {
               name="Exercise_Hours"
               value={formData.Exercise_Hours}
               onChange={handleChange}
-              placeholder="Hours per week"
-              min="1"
+              placeholder="Hours per day(0-9)"
+              min="0"
+              max="9"
               required
             />
+             <p className="text-xs text-gray-400" style={{fontSize:"0.8rem"}}>Include walking, gym, sports, etc.</p>
           </div>
 
           <div className="col-md-4">
@@ -276,13 +320,14 @@ const HeartDiseaseForm = () => {
               required
             >
               <option value="">Select</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
+              <option value="Yes">Yes, family members had heart disease</option>
+              <option value="No">No family history of heart disease</option>
             </select>
+             <p className="text-xs text-gray-400" style={{fontSize:"0.8rem"}}>Parents, siblings, or grandparents</p>
           </div>
 
           <div className="col-md-4">
-            <label htmlFor="Diabetes" className="form-label">Diabetes</label>
+            <label htmlFor="Diabetes" className="form-label">Do you have Diabetes?</label>
             <select
               className="form-select"
               id="Diabetes"
@@ -292,13 +337,13 @@ const HeartDiseaseForm = () => {
               required
             >
               <option value="">Select</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
+              <option value="Yes">Yes, I have diabetes</option>
+              <option value="No">No, I don't have diabetes</option>
             </select>
           </div>
 
           <div className="col-md-4">
-            <label htmlFor="Obesity" className="form-label">Obesity</label>
+            <label htmlFor="Obesity" className="form-label">Are You Overweight?</label>
             <select
               className="form-select"
               id="Obesity"
@@ -308,13 +353,14 @@ const HeartDiseaseForm = () => {
               required
             >
               <option value="">Select</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
+              <option value="Yes">Yes, I am overweight</option>
+              <option value="No">No, I have normal weight</option>
             </select>
+
           </div>
 
           <div className="col-md-4">
-            <label htmlFor="Stress_Level" className="form-label">Stress Level</label>
+            <label htmlFor="Stress_Level" className="form-label">Current Stress Level</label>
             <input
               type="number"
               className="form-control"
@@ -327,10 +373,11 @@ const HeartDiseaseForm = () => {
               max="10"
               required
             />
+            <p className="text-xs text-gray-400" style={{fontSize:"0.8rem"}}>1 = very low stress, 10 = extremely high stress</p>
           </div>
 
           <div className="col-md-4">
-            <label htmlFor="Blood_Sugar" className="form-label">Blood Sugar</label>
+            <label htmlFor="Blood_Sugar" className="form-label">Blood Sugar Level</label>
             <input
               type="number"
               className="form-control"
@@ -339,13 +386,15 @@ const HeartDiseaseForm = () => {
               value={formData.Blood_Sugar}
               onChange={handleChange}
               placeholder="Blood Sugar Level"
-              min="1"
+              min="50"
+              max="400"
               required
             />
+            <p className="text-xs text-gray-400" style={{fontSize:"0.8rem"}}>mg/dL from your latest blood test</p>
           </div>
 
-          <div className="col-md-4">
-            <label htmlFor="Exercise_Induced_Angina" className="form-label">Exercise Induced Angina</label>
+          <div className="col-md-5">
+            <label htmlFor="Exercise_Induced_Angina" className="form-label">Chest Discomfort During Exercise?</label>
             <select
               className="form-select"
               id="Exercise_Induced_Angina"
@@ -355,13 +404,14 @@ const HeartDiseaseForm = () => {
               required
             >
               <option value="">Select</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
+              <option value="Yes">Yes, I feel chest discomfort during exercise</option>
+              <option value="No">No, I don't feel chest discomfort during exercise</option>
             </select>
+            <p className="text-xs text-gray-400" style={{fontSize:"0.8rem"}}>Pain or discomfort when walking quickly or exercising</p>
           </div>
 
-          <div className="col-md-4">
-            <label htmlFor="Chest_Pain_Type" className="form-label">Chest Pain Type</label>
+          <div className="col-md-6">
+            <label htmlFor="Chest_Pain_Type" className="form-label">What Type of Chest Pain Do You Experience?</label>
             <select
               className="form-select"
               id="Chest_Pain_Type"
@@ -371,16 +421,16 @@ const HeartDiseaseForm = () => {
               required
             >
               <option value="">Select</option>
-              <option value="Typical Angina">Typical Angina</option>
-              <option value="Atypical Angina">Atypical Angina</option>
-              <option value="Non-Anginal Pain">Non-Anginal Pain</option>
-              <option value="Asymptomatic">Asymptomatic</option>
+              <option value="Typical Angina">Chest pain/tightness during activity that goes away with rest</option>
+              <option value="Atypical Angina">Unpredictable chest pain that doesn't follow a pattern</option>
+              <option value="Non-Anginal Pain">Pain not related to heart (muscle pain, indigestion)</option>
+              <option value="Asymptomatic">No chest pain at all</option>
             </select>
           </div>
         </div>
 
         <button type="submit" className="btn btn-primary mt-4 d-block mx-auto px-4 py-2">
-          Submit
+          Get Risk Assessment
         </button>
       </form>
     </div>
@@ -391,3 +441,5 @@ const HeartDiseaseForm = () => {
 };
 
 export default HeartDiseaseForm;
+
+

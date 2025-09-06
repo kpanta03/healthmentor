@@ -24,8 +24,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
             profile_image=validated_data.get('profile_image')
         )
-    
-
 # 18
 class UserLoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
@@ -41,3 +39,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = ['email', 'name', 'profile_image']
         read_only_fields = ['email', 'name']
+# 23
+class AdminUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email', 'name', 'profile_image', 'is_admin', 'is_active', 'created_at']

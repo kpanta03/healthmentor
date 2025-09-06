@@ -20,10 +20,14 @@ class HeartDiseasePrediction(models.Model):
     chest_pain_type = models.CharField(max_length=50)
     prediction = models.IntegerField()
     probability = models.FloatField()
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.name} - Prediction:{self.prediction}"
+    
+
+
     
     
 

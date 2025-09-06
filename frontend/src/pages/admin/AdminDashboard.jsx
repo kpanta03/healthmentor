@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 
 function AdminDashboard() {
   return (
-    <div className="container py-5">
-      <h1 className="text-center">Welcome Admin!</h1>
-      <p className="text-center">This is the admin dashboard.</p>
+    <div className="main-content" style={{backgroundColor:"white"}}>
+      <h1 >This is Admindashboard and here write everything.</h1>
     </div>
-  );
+  )
 }
-export default AdminDashboard;
+
+export default AdminDashboard

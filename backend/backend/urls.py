@@ -20,10 +20,13 @@ from django.urls import include
 from accounts.views import *
 from disease_prediction.views import *
 from hospitals.views import *
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/user/',include('accounts.urls')),#15
     path('api/disease/', include('disease_prediction.urls')),#21
-    #  path('api/hospitals/', include('hospitals.urls')),
-]
+    path('api/hospitals/', include('hospitals.urls')),
+    path('api/blogs/', include('blogs.urls')),
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 

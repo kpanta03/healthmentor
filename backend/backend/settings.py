@@ -1,5 +1,7 @@
 
 from pathlib import Path
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,6 +33,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'accounts',
     'disease_prediction',
+    'hospitals',
+    'blogs',
     'rest_framework_simplejwt',#JSON web token
     'corsheaders'#4
 ]
@@ -113,6 +117,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# at last
+# Media files (Uploaded files)
+MEDIA_URL = '/media/'  # The base URL for media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # The path to store uploaded files
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -141,6 +150,14 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+
+# # Ensure media files are served during development(at last paxi)
+# if DEBUG:
+#     from django.conf.urls.static import static
+#     urlpatterns = static(MEDIA_URL, document_root=MEDIA_ROOT)
+
+
 
 #development garera sakkesi WSGI or ASGI gara
 

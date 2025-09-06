@@ -21,7 +21,7 @@ function Login() {
       login(token, role);
 
       if (role === 'admin') {
-        navigate('/admin-dashboard');
+        navigate('/admin-users');
       } else {
         navigate('/');  // or user homepage
       }

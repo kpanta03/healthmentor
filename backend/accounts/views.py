@@ -9,8 +9,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view, permission_classes
 from accounts.permissions import *
-
-
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 # 13
 def get_tokens_for_user(user):
@@ -83,11 +83,79 @@ class AdminOnlyView(APIView):
     permission_classes=[IsAuthenticated, IsAdmin]
 
     def get(self,request):
+
+        search = request.query_params.get('search', '')
+        role_filter = request.query_params.get('role', 'all')
+        status_filter = request.query_params.get('status', 'all')
+
         users=User.objects.all()
-        data=UserProfileSerializer(users, many=True)
-        return Response(data)
+        if search:
+            users=users.filter(Q(name__icontains=search) | Q(email__icontains=search))
+        if role_filter in ['admin','user']:
+            is_admin = True if role_filter == 'admin' else False
+            users=users.filter(is_admin=is_admin)
+        if status_filter in ['active','inactive']:
+            is_active = True if status_filter == 'active' else False
+            users=users.filter(is_active=is_active)
+        
+        serializer = AdminUserSerializer(users, many=True)
+        return Response(serializer.data)
 
+class AdminUpdateUserView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
 
+    def put(self, request, email):
+        """Update a user's name, role, and active status."""
+        user = get_object_or_404(User, email=email)
+        data = request.data
+
+        if 'name' not in data:
+                return Response({'error': 'Name is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.name = data.get('name', user.name)
+        user.is_admin = data.get('is_admin', user.is_admin)
+        user.is_active = data.get('is_active', user.is_active)
+        user.save()
+
+        return Response({'msg': 'User updated successfully'})
+
+# last ko
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated, IsAdmin])
+def toggle_user_status(request, email):
+    try:
+        user = User.objects.get(email=email)
+        user.is_active = not user.is_active
+        user.save()
+        return Response({"msg": "User status updated", "is_active": user.is_active})
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+# Delete user
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsAdmin])
+def delete_user(request, email):
+    try:
+        user = User.objects.get(email=email)
+        user.delete()
+        return Response({"msg": "User deleted"})
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsAdmin])
+def get_user_stats(request):
+    total_users = User.objects.count()
+    active_users = User.objects.filter(is_active=True).count()
+    inactive_users = User.objects.filter(is_active=False).count()
+    admin_users = User.objects.filter(is_admin=True).count()
+
+    return Response({
+        "total_users": total_users,
+        "active_users": active_users,
+        "inactive_users": inactive_users,
+        "admin_users": admin_users
+    })
 
 # 26
 # @api_view(['GET'])

@@ -1,5 +1,5 @@
 
-import './styles.css';
+// import './styles.css';
 import logo from '../Assets/logo.png';
 import {NavLink, Link, useNavigate} from "react-router-dom";
 import React, { useContext } from 'react';
@@ -37,17 +37,6 @@ function Navbar() {
 
                 <div className="collapse navbar-collapse mt-1" id="navbarNav">
                   <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-5">
-                    {auth.role === 'admin' ? (
-                <>
-                  <li className="nav-item">
-                    <NavLink className={({ isActive }) => (isActive ? "active nav-link" : "nav-link")} to="/admin-dashboard">Admin Dashboard</NavLink>
-                  </li>
-                  <li className="nav-item">
-                    <NavLink className={({ isActive }) => (isActive ? "active nav-link" : "nav-link")} to="/add-blog">Add Blogs</NavLink>
-                  </li>
-                </>
-              ):( 
-                <>
                     <li className="nav-item">
                         <NavLink className={({isActive})=>(isActive?"active nav-link":"nav-link")} aria-current="page" to="/" end>Home</NavLink>
                     </li>
@@ -57,13 +46,10 @@ function Navbar() {
                     <li className="nav-item">
                         <NavLink className={({isActive})=>(isActive?"active nav-link":"nav-link")}  to="/blogs">Blogs</NavLink>
                     </li>
-                    <li className="nav-item">
+                    {/* <li className="nav-item">
                         <NavLink className={({isActive})=>(isActive?"active nav-link":"nav-link")}  to="/questions">Ask questions</NavLink>
-                    </li>
-                    </>   
-              )}
+                    </li> */}
                   </ul>
-
 
                   {/* Conditionally render Login/Logout button */}
                  {auth.isAuthenticated ? (

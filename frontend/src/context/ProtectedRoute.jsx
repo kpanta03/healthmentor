@@ -4,7 +4,7 @@ import { AuthContext } from './AuthContext';
 
 const ProtectedRoute = ({ children }) => {
   const { auth } = useContext(AuthContext);
-
+  
   if (!auth.isAuthenticated || auth.role !== 'admin') {
     return <Navigate to="/login" replace />;
   }
@@ -13,3 +13,4 @@ const ProtectedRoute = ({ children }) => {
 };
 
 export default ProtectedRoute;
+// admin layout and user layout hera paxi

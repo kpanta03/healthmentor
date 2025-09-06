@@ -4,7 +4,7 @@
       box-sizing: border-box;
     }
 
-    body {
+    body.user{
       background-color: #00193C;
       color: white;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -254,8 +254,16 @@
 }
 
 
-
-
+/* hospitals recommendations */
+.hospital-card {
+            background: linear-gradient(135deg, #012c60, #004080);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            padding: 20px;
+            color: white;
+            font-size: 1rem;
+        }
+  
 
     @media (max-width: 991.98px) {
       .navbar {
